@@ -10,14 +10,18 @@
 #####################################################################*/
 
 #import <Foundation/Foundation.h>
+#import "SMBActions.h"
 #import "SMBMolecule.h"
+
 
 int main(int argc, const char * argv[]) {
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
         NSUInteger sites = 5;
         double q = 0.5;
         double p = 0.9;
-        SMBMolecule *molecule = [[SMBMolecule alloc]initWithNumberOfBindingSites: sites];
+	SMBActions *actions = [[[SMBActions alloc] init] autorelease];
+	[actions runActions];
+        SMBMolecule *molecule = [[[SMBMolecule alloc]initWithNumberOfBindingSites: sites] autorelease];
         [molecule setQ: &q];
         [molecule setP: &p];
         [molecule simPositiveBindingEvents];

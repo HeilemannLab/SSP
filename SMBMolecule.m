@@ -20,8 +20,8 @@
     self = [super init];
     if (self) {
         _numberOfBindingSites = data;
-        _bindingEventList = [NSMutableArray array];
-        _blinkingEventList = [NSMutableArray array];
+        _bindingEventList = [[NSMutableArray array] retain];
+        _blinkingEventList = [[NSMutableArray array] retain];
 	_blinkingEvents = 0;
     }
     return self;
@@ -160,6 +160,7 @@
 //deallocator
 -(void) dealloc
 {
+	NSLog(@"molecule deallocated");
 	[_bindingEventList release];
 	_bindingEventList = nil;
 	[_blinkingEventList release];
