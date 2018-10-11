@@ -10,12 +10,26 @@
 #####################################################################*/
 
 #import <Foundation/Foundation.h>
+#import "SMBParser.h"
+#import "SMBFlock.h"
 #import "SMBActions.h"
 #import "SMBMolecule.h"
 
 
 int main(int argc, const char * argv[]) {
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+	SMBParser *parser = [[[SMBParser alloc] init] autorelease];
+	[parser importCommandLineArguments:argc :argv];
+	if ([parser argc] == 1){
+		return 0;
+	}
+	else if ([parser help]){
+		[parser printHelp];
+		return 0;
+	}
+	SMBFlock *flock = [[[SMBFlock alloc] init] autorelease];
+	[flock importParser: [parser argv]];
+	/*
         NSUInteger sites = 5;
         double q = 0.5;
         double p = 0.9;
@@ -28,6 +42,7 @@ int main(int argc, const char * argv[]) {
         [molecule simMoleculeBlinking];
       	[molecule sumBlinkingEvents];
         [molecule printMolecule];
+	*/
         //indexOfObject:inSortedRange:options:usingComparator
     [pool drain];
     return 0;

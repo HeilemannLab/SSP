@@ -16,10 +16,37 @@
 
 @interface SMBFlock : NSObject
 {
+	unsigned _numberOfMolecules;
+	double _p;
+	double _q;
+	NSMutableArray* _moleculePDF;
+	NSMutableArray* _moleculeCDF;
+	NSMutableArray* _molecules;
+	NSDate* _creationTime;
+	NSMutableString* _parameterFileName;
+	NSMutableString* _resultFileName;
+	NSMutableString* _statisticsFileName;
 }
--(id) init;
--(void) dealloc;
 
+//initializers
+-(id) init;
+
+//mutators
+-(void) setNumberOfMolecules:(unsigned) data;
+-(void) setP:(double) data;
+-(void) setQ:(double) data;
+-(void) setMoleculePDF:(NSMutableArray*) data;
+
+//special functions
+-(void) importParser:(NSMutableArray*) data;
+
+//write functions
+
+//print functions
+-(void) printFlockParameter;
+
+//deallocator
+-(void) dealloc;
 @end
 
 #endif

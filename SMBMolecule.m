@@ -83,6 +83,7 @@
 -(void) simPositiveBindingEvents
 {
     double event = 0.0;
+    [_bindingEventList removeAllObjects];
     for (unsigned i=0; i<_numberOfBindingSites; i++){
         event = (rand() % 1000)/(double)1000;
         NSLog(@"event %u is %.2f.", i,event);
@@ -98,6 +99,7 @@
 - (void) simMoleculeBlinking
 {
     unsigned blinks = 0;
+    [_blinkingEventList removeAllObjects];
     for (unsigned i=0; i<_numberOfBindingSites; i++){
         blinks = [self simBindingSiteBlinking: i];
         [_blinkingEventList addObject: [NSNumber numberWithInt: blinks]];
