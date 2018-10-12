@@ -37,16 +37,30 @@
 -(void) setQ:(double) data;
 -(void) setMoleculePDF:(NSMutableArray*) data;
 
-//special functions
+//import functions
 -(void) importParser:(NSMutableArray*) data;
+-(void) calculateCDF;
+
+//initActions
+//initMolecules
+//runSimulation
+
+//proof functions
+-(bool) checkPDF;
+-(bool) checkProbability:(double) data;
+-(bool) checkFlockValidity;
 
 //write functions
+//writeSimulationParameters
+//writeSimulationResults
+//writeSimulationStatistics
 
 //print functions
 -(void) printFlockParameter;
+-(void) printProbabilityError:(double) data;
+-(void) printPDFError;
 
 //deallocator
 -(void) dealloc;
 @end
-
 #endif

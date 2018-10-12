@@ -14,7 +14,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SMBParser : NSObject
+@interface SMBParser: NSObject
 {
 	unsigned _argc;
 	NSMutableArray* _argv;
@@ -32,11 +32,13 @@
 //special functions
 -(void) importCommandLineArguments:(int) size :(const char**) data;
 -(bool) askedForHelp:(const char**) data;
+-(bool) checkParserLength: (unsigned) data;
 
 //print functions
 -(void) printInfo;
 -(void) printHelp;
 -(void) printFalseParserArgument:(unsigned) data;
+-(void) printShortParser:(unsigned) data;
 //deallocator
 -(void) dealloc;
 

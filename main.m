@@ -20,15 +20,22 @@ int main(int argc, const char * argv[]) {
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 	SMBParser *parser = [[[SMBParser alloc] init] autorelease];
 	[parser importCommandLineArguments:argc :argv];
-	if ([parser argc] == 1){
+	// check for valid parser arguments or if help is needed
+ 	if(([parser help]) || (![parser checkParserLength: 4])){
+		[pool drain];
 		return 0;
 	}
-	else if ([parser help]){
-		[parser printHelp];
-		return 0;
-	}
+	// Initialize Flock
 	SMBFlock *flock = [[[SMBFlock alloc] init] autorelease];
 	[flock importParser: [parser argv]];
+	if(![flock checkFlockValidity]){
+		[pool drain];
+		return 0;
+	}
+	// set up simulation environment
+	[flock printFlockParameter];
+	// run simulation
+	// log simulation results
 	/*
         NSUInteger sites = 5;
         double q = 0.5;

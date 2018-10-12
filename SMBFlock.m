@@ -29,6 +29,7 @@
 	_parameterFileName = [[[NSMutableString alloc] init] retain];
 	_resultFileName = [[[NSMutableString alloc] init] retain];
 	_statisticsFileName = [[[NSMutableString alloc] init] retain];
+	//create Filenames!!!
 	return self;
 }
 
@@ -65,7 +66,83 @@
 	for (unsigned i=3; i< [data count]; i++){
 		[_moleculePDF addObject: [[data objectAtIndex:i] copy]];
 	}
+	[self calculateCDF];
 	[data release];
+}
+
+-(void) calculateCDF
+{
+	[_moleculeCDF removeAllObjects];
+	double cdfEntry = 0.0;
+	for (unsigned i=0; i<[_moleculePDF count]; i++){
+		cdfEntry += [[_moleculePDF objectAtIndex: i] doubleValue];
+		[_moleculeCDF addObject:[NSNumber numberWithDouble: cdfEntry]];
+	}
+}
+
+//proof functions
+-(bool) checkPDF
+{
+	bool result = true;
+	double sum = 0.0;
+	for (unsigned i=0; i<[_moleculePDF count]; i++){
+		sum += [[_moleculePDF objectAtIndex:i] doubleValue];
+	}
+	if (sum!=1.0){
+		[self printPDFError];
+		result=false;
+	}
+	return result;
+}
+
+-(bool) checkProbability:(double) data
+{
+	bool result = true;
+	if((data>1.0) || (data<0.0)){
+		[self printProbabilityError: data];
+		result = false;
+	}
+	return result;
+}
+
+-(bool) checkFlockValidity
+{
+	bool result =true;
+	bool c1=[self checkPDF];
+	bool c2=[self checkProbability: _p];
+	bool c3=[self checkProbability: _q];
+	if(((!c1)||(!c2))||(!c3)) result = false;
+	return result;
+}
+
+//write functions
+//print functions
+-(void) printFlockParameter
+{
+	NSMutableString* message = [[NSMutableString alloc] init];
+	[message appendString: @"SSP simulation parameters:"];
+	[message appendFormat: @"\nmolecules:\t%i", _numberOfMolecules];
+	[message appendFormat: @"\np:\t%.2f", _p];
+	[message appendFormat: @"\nq:\t%.2f", _q];
+	[message appendString: @"\nstate\tPDF\tCDF\n"];
+	for (unsigned i=0; i<[_moleculePDF count]; i++){
+		[message appendFormat: @"# %i", i+1];
+		[message appendFormat: @"\t%.3f", [[_moleculePDF objectAtIndex: i] doubleValue]];
+		[message appendFormat: @"\t%.3f\n", [[_moleculeCDF objectAtIndex: i] doubleValue]];
+	}
+	[message appendString: @"\n"];
+	NSLog(message);
+	[message release];
+}
+
+-(void) printProbabilityError:(double) data
+{
+	NSLog(@"Error: %.2f is not a valid probability: p=[0.0; 1.0]!", data);
+}
+
+-(void) printPDFError
+{
+	NSLog(@"Error: PDF does not sum up to 1.0!");
 }
 
 // deallocator
