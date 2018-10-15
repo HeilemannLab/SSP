@@ -13,23 +13,29 @@
 
 #import <Foundation/Foundation.h>
 #import "SMBFlock.h"
+#import "SMBMolecule.h"
 
 @implementation SMBFlock
 // initializer
 -(id) init
 {
 	self = [super init];
-	_numberOfMolecules = 0;
-	_p = 0.0;
-	_q = 0.0;
-	_moleculePDF = [[[NSMutableArray alloc] init] retain];
-	_moleculeCDF = [[[NSMutableArray alloc] init] retain];
-	_molecules = [[[NSMutableArray alloc] init] retain];
-	_creationTime = [[NSDate date] retain];
-	_parameterFileName = [[[NSMutableString alloc] init] retain];
-	_resultFileName = [[[NSMutableString alloc] init] retain];
-	_statisticsFileName = [[[NSMutableString alloc] init] retain];
-	//create Filenames!!!
+	if (self){
+		_numberOfMolecules = 0;
+		_p = 0.0;
+		_q = 0.0;
+		_moleculePDF = [[NSMutableArray alloc] init];
+		_moleculeCDF = [[NSMutableArray alloc] init];
+		_molecules = [[NSMutableArray alloc] init];
+		_actions = [[SMBActions alloc] init];
+		// SMBActions!!
+		_creationTime = [[NSDate alloc] init];
+		_parameterFileName = [[NSMutableString alloc] init];
+		_resultFileName = [[NSMutableString alloc] init];
+		_statisticsFileName = [[NSMutableString alloc] init];
+		//create Filenames!!!
+		[self createFileNames];
+	}
 	return self;
 }
 
@@ -54,7 +60,7 @@
 	_moleculePDF = [data copy];
 }
 
-// special sunctions
+// import functions
 -(void) importParser:(NSMutableArray*) data
 {
 	[data retain];
@@ -80,7 +86,55 @@
 	}
 }
 
-//proof functions
+// search functions
+-(unsigned) binarySearchCDF:(double) data
+{
+	unsigned l = 0;
+	unsigned r = [_moleculeCDF count];
+	unsigned m = 0;
+	while (l<r){
+		m = floor((l+r)/2); 
+		if ([[_moleculePDF objectAtIndex: m] doubleValue] < data){
+			l = m + 1;
+		}
+		else{
+			r = m;
+		}
+	}	
+	return l;
+}
+
+// simulation Fuctions
+-(unsigned) simMoleculeType
+{
+	unsigned type = 0;
+	double event = (rand() % 1000)/(double) 1000.0;
+	type = [self binarySearchCDF: event] + 1;
+	return type;
+}
+
+-(void) initActions
+{
+	[_actions runActions];
+}
+
+-(void) initMolecules
+{
+	[_molecules removeAllObjects];
+	for(unsigned i=0; i<_numberOfMolecules; i++){
+		[_molecules addObject: [[SMBMolecule alloc]init:[self simMoleculeType] :&_p :&_q]];
+		[[_molecules objectAtIndex:i] release];
+	}
+}
+
+-(void) runSimulation
+{
+	for(unsigned i=0; i<_numberOfMolecules; i++){
+		[[_molecules objectAtIndex:i] simMolecule];
+	}
+}
+
+// proof functions
 -(bool) checkPDF
 {
 	bool result = true;
@@ -116,6 +170,108 @@
 }
 
 //write functions
+-(void) createFileNames
+{
+	[self createParameterFileName];
+	[self createResultsFileName];
+	[self createStatisticsFileName];
+}
+-(void) createParameterFileName
+{
+	[_parameterFileName deleteCharactersInRange: NSMakeRange(0, [_parameterFileName length])];
+	[_parameterFileName appendString: @"ssp_at_"];
+	[_parameterFileName appendString: [_creationTime description]];
+	[_parameterFileName appendString: @"_parameter.txt"];
+}
+
+-(void) createResultsFileName
+{
+	[_resultFileName deleteCharactersInRange: NSMakeRange(0, [_resultFileName length])];
+	[_resultFileName appendString: @"ssp_at_"];
+	[_resultFileName appendString: [_creationTime description]];
+	[_resultFileName appendString: @"_results.txt"];
+}
+
+-(void) createStatisticsFileName
+{
+	[_statisticsFileName deleteCharactersInRange: NSMakeRange(0, [_statisticsFileName length])];
+	[_statisticsFileName appendString: @"ssp_at_"];
+	[_statisticsFileName appendString: [_creationTime description]];
+	[_statisticsFileName appendString: @"_statistics.txt"];
+}
+
+-(void) logSimulation
+{
+	[self writeSimulationParameters];
+	[self writeSimulationResults];
+	[self writeSimulationStatistics];
+}
+-(void) writeSimulationParameters
+{
+	FILE* stream;
+	if ((stream = fopen([_parameterFileName UTF8String], "w")) != NULL){
+		fprintf(stream, "#SSP parameter file\n");
+		fprintf(stream, "#p:\n%.3f\n", _p);
+		fprintf(stream, "#q:\n%.3f\n", _q);
+		fprintf(stream, "#n:\n%i\n", _numberOfMolecules);
+		fprintf(stream, "# probability density function of molecule types:\n");
+		for (unsigned i=0; i<[_moleculePDF count]; i++){
+			fprintf(stream, "%.3f\t", [[_moleculePDF objectAtIndex:i] doubleValue]);
+		}
+		fprintf(stream, "\n# cummulative density function of molecule types:\n");
+		for (unsigned i=0; i<[_moleculeCDF count]; i++){
+			fprintf(stream, "%.3f\t", [[_moleculeCDF objectAtIndex:i] doubleValue]);
+		}
+		
+	fclose(stream);
+	}
+	else{
+		NSLog(@"Error: Could not write simulation parameters to file %@. Make sure you have the rights to access it.", _parameterFileName);
+	}
+}
+
+-(void) writeSimulationResults
+{
+	unsigned a, b;
+	FILE* stream;
+	if ((stream = fopen([_resultFileName UTF8String], "w")) != NULL){
+		fprintf(stream, "#SSP result file\n");
+		fprintf(stream, "#molecule\tactivity\tblinks\n");
+		for (unsigned i=0; i<_numberOfMolecules; i++){
+			for (unsigned j=0; j<[[_molecules objectAtIndex:i] numberOfBindingSites]; j++){
+				a = [[_molecules objectAtIndex: i] bindingEventAtSite: j];
+				b = [[_molecules objectAtIndex: i] blinkingEventsAtSite: j];
+				fprintf(stream, "%u\t%u\t%u\n", i,a,b);
+			}
+		}
+		
+	fclose(stream);
+	}
+	else{
+		NSLog(@"Error: Could not write simulation results to file %@. Make sure you have the rights to access it.", _resultFileName);
+	}
+}
+
+-(void) writeSimulationStatistics
+{
+	unsigned s, a, b;
+	FILE* stream;
+	if ((stream = fopen([_statisticsFileName UTF8String], "w")) != NULL){
+		fprintf(stream, "#SSP statistisc file\n");
+		fprintf(stream, "#molecule\tsites\tactivity\tblinks\n");
+		for (unsigned i=0; i<_numberOfMolecules; i++){
+			s = [[_molecules objectAtIndex: i] numberOfBindingSites];
+			a = [[_molecules objectAtIndex: i] numberOfActiveBindingSites];
+			b = [[_molecules objectAtIndex: i] blinkingEvents]; 
+			fprintf(stream, "%u\t%u\t%u\t%u\n", i,s,a,b);
+		}
+		fclose(stream);
+	}
+	else{
+		NSLog(@"Error: Could not write simulation statistics to file %@. Make sure you have the rights to access it.", _statisticsFileName);
+	}
+}
+
 //print functions
 -(void) printFlockParameter
 {
@@ -131,8 +287,15 @@
 		[message appendFormat: @"\t%.3f\n", [[_moleculeCDF objectAtIndex: i] doubleValue]];
 	}
 	[message appendString: @"\n"];
-	NSLog(message);
+	NSLog(@"%@", message);
 	[message release];
+}
+
+-(void) printMolecules
+{
+	for(unsigned i=0; i<_numberOfMolecules; i++){
+		[[_molecules objectAtIndex:i] printMolecule];
+	}
 }
 
 -(void) printProbabilityError:(double) data
@@ -148,13 +311,13 @@
 // deallocator
 -(void) dealloc
 {
-	NSLog(@"Flock is deallocated.");
 	[_moleculePDF release];
 	_moleculePDF = nil;
 	[_moleculeCDF release];
 	_moleculeCDF = nil;
 	[_molecules release];
 	_molecules = nil;
+	[_actions release];
 	[_creationTime release];
 	_creationTime = nil;
 	[_parameterFileName release];

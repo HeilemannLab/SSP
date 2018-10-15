@@ -15,22 +15,18 @@
 
 @implementation SMBMolecule
 //initializer
--(id) initWithNumberOfBindingSites:(unsigned) data
+-(id) init:(unsigned) molData :(double*) pData :(double*) qData
 {
     self = [super init];
     if (self) {
-        _numberOfBindingSites = data;
-        _bindingEventList = [[NSMutableArray array] retain];
-        _blinkingEventList = [[NSMutableArray array] retain];
+        _numberOfBindingSites = molData;
+	_p = pData;
+	_q = qData;
+        _bindingEventList = [[NSMutableArray alloc] init];
+        _blinkingEventList = [[NSMutableArray alloc] init];
 	_blinkingEvents = 0;
     }
     return self;
-}
-
--(id) init
-{
-	self = [self initWithNumberOfBindingSites: 0];
-	return self;
 }
 
 //mutators
@@ -69,9 +65,28 @@
 	return _bindingEventList;
 }
 
+-(unsigned) bindingEventAtSite:(unsigned) data
+{
+	return [[_bindingEventList objectAtIndex: data] unsignedLongValue];
+}
+
 -(NSMutableArray*) blinkingEventList
 {
 	return _blinkingEventList;
+}
+
+-(unsigned) blinkingEventsAtSite:(unsigned) data
+{
+	return [[_blinkingEventList objectAtIndex: data] unsignedLongValue];
+}
+
+-(unsigned) numberOfActiveBindingSites
+{
+	unsigned activeSites=0;
+	for (unsigned i=0; i<[_bindingEventList count]; i++){
+		activeSites += [[_bindingEventList objectAtIndex:i] unsignedLongValue];
+	}
+	return activeSites;
 }
 
 -(unsigned) blinkingEvents
@@ -80,13 +95,19 @@
 }
 
 //simulation Methods
+-(void) simMolecule
+{
+	[self simPositiveBindingEvents];
+	[self simMoleculeBlinking];
+	[self sumBlinkingEvents];
+}
+
 -(void) simPositiveBindingEvents
 {
     double event = 0.0;
     [_bindingEventList removeAllObjects];
     for (unsigned i=0; i<_numberOfBindingSites; i++){
         event = (rand() % 1000)/(double)1000;
-        NSLog(@"event %u is %.2f.", i,event);
         if (event <= *_q){
     	    [_bindingEventList addObject: [NSNumber numberWithInt:0]];
         }
@@ -162,7 +183,6 @@
 //deallocator
 -(void) dealloc
 {
-	NSLog(@"molecule deallocated");
 	[_bindingEventList release];
 	_bindingEventList = nil;
 	[_blinkingEventList release];

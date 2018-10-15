@@ -31,7 +31,6 @@
 
 -(void) dealloc
 {
-	NSLog(@"Actions deallocated");
 	[super dealloc];
 }
 

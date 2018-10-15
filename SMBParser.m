@@ -20,10 +20,12 @@
 -(id) init
 {
 	self = [super init];
-	[self printInfo];
-	_argc = 0;
-	_argv = [[NSMutableArray array] retain];
-	_help = false;
+	if(self){
+		[self printInfo];
+		_argc = 0;
+		_argv = [[NSMutableArray alloc] init];
+		_help = false;
+	}
 	return self;
 }
 
@@ -99,7 +101,7 @@
 	[info appendString:@"\nCopyright © 2018 by Sebastian Malkusch"];
 	[info appendString:@"\nmalkusch@chemie.uni-frankfurt.de"];
 	[info appendString:@"\nhttps://github.com/SMLMS/SSP.git\n\n"];
-	NSLog(info);
+	NSLog(@"%@",info);
 	[info release];
 }
 
@@ -113,7 +115,7 @@
 	[message appendString:@"\n#3\t(float)\t q value"];
 	[message appendString:@"\n#4-end\t(float)\t pdf of available molecule types"];
 	[message appendString:@"\nparameters 4-end need to sum to 1.\n\n"];
-	NSLog(message);
+	NSLog(@"%@",message);
 	[message release];
 }
 
@@ -130,7 +132,6 @@
 //deallocator
 -(void) dealloc
 {
-	NSLog(@"Parser is deallocated.");
 	[_argv release];
 	_argv = nil;
 	[super dealloc];

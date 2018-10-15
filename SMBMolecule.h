@@ -26,8 +26,7 @@
 }
 
 //initializer
--(id) initWithNumberOfBindingSites: (unsigned) data;
--(id) init;
+-(id) init: (unsigned) molData :(double*) pData :(double*) qData;
 
 //mutators
 -(void) setNumberOfBindingSites:(unsigned) data;
@@ -37,12 +36,15 @@
 -(void) setQ:(double*) data;
 -(double*) q;
 -(NSMutableArray*) bindingEventList;
+-(unsigned) bindingEventAtSite:(unsigned) data;
 -(NSMutableArray*) blinkingEventList;
+-(unsigned) blinkingEventsAtSite:(unsigned) data;
+-(unsigned) numberOfActiveBindingSites;
 -(unsigned) blinkingEvents;
 
 // simulation methods
+- (void) simMolecule;
 - (void) simPositiveBindingEvents;
-
 - (void) simMoleculeBlinking;
 - (unsigned) simBindingSiteBlinking: (unsigned) site;
 - (bool) checkBlinkingEvent;

@@ -13,6 +13,7 @@
 #define SMBFlock_h
 
 #import <Foundation/Foundation.h>
+#import"SMBActions.h"
 
 @interface SMBFlock : NSObject
 {
@@ -22,6 +23,7 @@
 	NSMutableArray* _moleculePDF;
 	NSMutableArray* _moleculeCDF;
 	NSMutableArray* _molecules;
+	SMBActions* _actions;
 	NSDate* _creationTime;
 	NSMutableString* _parameterFileName;
 	NSMutableString* _resultFileName;
@@ -41,9 +43,14 @@
 -(void) importParser:(NSMutableArray*) data;
 -(void) calculateCDF;
 
-//initActions
-//initMolecules
-//runSimulation
+//search functions
+-(unsigned) binarySearchCDF:(double) data;
+
+// simulation functions
+-(unsigned) simMoleculeType;
+-(void) initActions;
+-(void) initMolecules;
+-(void) runSimulation;
 
 //proof functions
 -(bool) checkPDF;
@@ -51,12 +58,18 @@
 -(bool) checkFlockValidity;
 
 //write functions
-//writeSimulationParameters
-//writeSimulationResults
-//writeSimulationStatistics
+-(void) createFileNames;
+-(void) createParameterFileName;
+-(void) createResultsFileName;
+-(void) createStatisticsFileName;
+-(void) logSimulation;
+-(void) writeSimulationParameters;
+-(void) writeSimulationResults;
+-(void) writeSimulationStatistics;
 
 //print functions
 -(void) printFlockParameter;
+-(void) printMolecules;
 -(void) printProbabilityError:(double) data;
 -(void) printPDFError;
 
