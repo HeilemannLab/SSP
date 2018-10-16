@@ -121,7 +121,7 @@
 
 -(void) printFalseParserArgument:(unsigned) data
 {
-	NSLog(@"Warning: Input Argument %u is not a number!", data);
+	NSLog(@"Warning: Input argument %u is not a number!", data);
 }
 
 -(void) printShortParser:(unsigned) data

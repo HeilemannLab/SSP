@@ -134,8 +134,8 @@
         blinks = 1;
         bool result = [self checkBlinkingEvent];
         while (result){
-            result = [self checkBlinkingEvent];
             ++blinks;
+            result = [self checkBlinkingEvent];
         }
     }
     return blinks;
@@ -145,7 +145,7 @@
 {
     bool result=true;
     double event = (rand() % 1000)/(double)1000;
-    if (event> *_p) result=false;
+    if (event <= *_p) result=false;
     return result;
 }
 
@@ -170,7 +170,7 @@
 
 - (void) printBlinkingEvents
 {
-    NSLog(@"The detected blinking events of the molecul are %u", _blinkingEvents);
+    NSLog(@"The detected blinking events of the molecule are %u", _blinkingEvents);
 }
 
 - (void) printMolecule

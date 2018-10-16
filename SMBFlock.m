@@ -182,6 +182,10 @@
 	[_parameterFileName appendString: @"ssp_at_"];
 	[_parameterFileName appendString: [_creationTime description]];
 	[_parameterFileName appendString: @"_parameter.txt"];
+	[_parameterFileName replaceCharactersInRange: NSMakeRange(17,1) withString: @"_"];
+	[_parameterFileName replaceCharactersInRange: NSMakeRange(20,1) withString: @"-"];
+	[_parameterFileName replaceCharactersInRange: NSMakeRange(23,1) withString: @"-"];
+	[_parameterFileName replaceCharactersInRange: NSMakeRange(26,7) withString: @"_"];
 }
 
 -(void) createResultsFileName
@@ -190,6 +194,10 @@
 	[_resultFileName appendString: @"ssp_at_"];
 	[_resultFileName appendString: [_creationTime description]];
 	[_resultFileName appendString: @"_results.txt"];
+	[_resultFileName replaceCharactersInRange: NSMakeRange(17,1) withString: @"_"];
+	[_resultFileName replaceCharactersInRange: NSMakeRange(20,1) withString: @"-"];
+	[_resultFileName replaceCharactersInRange: NSMakeRange(23,1) withString: @"-"];
+	[_resultFileName replaceCharactersInRange: NSMakeRange(26,7) withString: @"_"];
 }
 
 -(void) createStatisticsFileName
@@ -198,6 +206,10 @@
 	[_statisticsFileName appendString: @"ssp_at_"];
 	[_statisticsFileName appendString: [_creationTime description]];
 	[_statisticsFileName appendString: @"_statistics.txt"];
+	[_statisticsFileName replaceCharactersInRange: NSMakeRange(17,1) withString: @"_"];
+	[_statisticsFileName replaceCharactersInRange: NSMakeRange(20,1) withString: @"-"];
+	[_statisticsFileName replaceCharactersInRange: NSMakeRange(23,1) withString: @"-"];
+	[_statisticsFileName replaceCharactersInRange: NSMakeRange(26,7) withString: @"_"];
 }
 
 -(void) logSimulation
@@ -257,7 +269,7 @@
 	unsigned s, a, b;
 	FILE* stream;
 	if ((stream = fopen([_statisticsFileName UTF8String], "w")) != NULL){
-		fprintf(stream, "#SSP statistisc file\n");
+		fprintf(stream, "#SSP statistics file\n");
 		fprintf(stream, "#molecule\tsites\tactivity\tblinks\n");
 		for (unsigned i=0; i<_numberOfMolecules; i++){
 			s = [[_molecules objectAtIndex: i] numberOfBindingSites];
