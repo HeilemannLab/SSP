@@ -114,7 +114,11 @@
 	[info appendString:@"\nStochastic Simulation of Photophysics"];
 	[info appendString:@"\nSingle Molecule Biophysics"];
 	[info appendString:@"\nCopyright © 2018 by Sebastian Malkusch"];
-	[info appendString:@"\nmalkusch@chemie.uni-frankfurt.de"];
+	[info appendString:@"\nmalkusch@chemie.uni-frankfurt.de\n\n"];
+	[info appendString:@"SSP comes with ABSOLUTELY NO WARRANTY\n"];
+	[info appendString:@"SSP is free software, and you are welcome to\n"];
+	[info appendString:@"redistribute it under certain conditions\n\n"];
+	[info appendString:@"for further details please visit the project page:"]; 
 	[info appendString:@"\nhttps://github.com/SMLMS/SSP.git\n\n"];
 	NSLog(@"%@",info);
 	[info release];
