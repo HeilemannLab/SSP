@@ -105,11 +105,11 @@
 -(unsigned) binarySearchCDF:(double) data
 {
 	unsigned l = 0;
-	unsigned r = [_moleculeCDF count];
+	unsigned r = [_moleculeCDF count]-1;
 	unsigned m = 0;
 	while (l<r){
 		m = floor((l+r)/2); 
-		if ([[_moleculePDF objectAtIndex: m] doubleValue] < data){
+		if ([[_moleculeCDF objectAtIndex: m] doubleValue] < data){
 			l = m + 1;
 		}
 		else{
@@ -124,7 +124,7 @@
 {
 	unsigned type = 0;
 	double event = (rand() % 1000)/(double) 1000.0;
-	type = [self binarySearchCDF: event] + 1;
+	type = [self binarySearchCDF: event]+1;
 	return type;
 }
 
