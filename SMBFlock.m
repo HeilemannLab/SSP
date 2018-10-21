@@ -1,13 +1,13 @@
 /* ######################################################################
 * File Name: SMBFlock.m
-* Project: SMBFlock
+* Project: SSP
 * Version: 18.10
 * Creation Date: 10.10.2018
-* Created By Sebastian Malkusch
-* <malkusch@chemie.uni-frankfurt.de>
-* Goethe University of Frankfurt
-* Physical and Theoretical Chemistry
-* Single Molecule Biophysics
+* Created By: Sebastian Malkusch
+* Contact: <malkusch@chemie.uni-frankfurt.de>
+* Company: Goethe University of Frankfurt
+* Institute: Physical and Theoretical Chemistry
+* Department: Single Molecule Biophysics
 *
 * License
 * Copyright (C) 2018  Sebastian Malkusch
@@ -105,7 +105,7 @@
 -(unsigned) binarySearchCDF:(double) data
 {
 	unsigned l = 0;
-	unsigned r = [_moleculeCDF count]-1;
+	unsigned r = (unsigned int)[_moleculeCDF count]-1;
 	unsigned m = 0;
 	while (l<r){
 		m = floor((l+r)/2); 

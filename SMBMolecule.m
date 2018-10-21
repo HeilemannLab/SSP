@@ -4,6 +4,7 @@
 * Version: 18.10
 * Creation Date: 10.10.2018
 * Created By: Sebastian Malkusch
+* Contact: <malkusch@chemie.uni-frankfurt.de>
 * Company: Goethe University of Frankfurt
 * Institute: Physical and Theoretical Chemistry
 * Department: Single Molecule Biophysics
@@ -82,7 +83,7 @@
 
 -(unsigned) bindingEventAtSite:(unsigned) data
 {
-	return [[_bindingEventList objectAtIndex: data] unsignedLongValue];
+	return (unsigned int)[[_bindingEventList objectAtIndex: data] unsignedLongValue];
 }
 
 -(NSMutableArray*) blinkingEventList
@@ -92,7 +93,7 @@
 
 -(unsigned) blinkingEventsAtSite:(unsigned) data
 {
-	return [[_blinkingEventList objectAtIndex: data] unsignedLongValue];
+	return (unsigned int)[[_blinkingEventList objectAtIndex: data] unsignedLongValue];
 }
 
 -(unsigned) numberOfActiveBindingSites

@@ -1,9 +1,10 @@
 /* ######################################################################
-* File Name: SMBParser
-* Project: ssp
+* File Name: SMBParser.h
+* Project: SSP
 * Version: 18.10
 * Creation Date: 11.10.2018
 * Created By: Sebastian Malkusch
+* Contact: <malkusch@chemie.uni-frankfurt.de>
 * Company: Goethe University of Frankfurt
 * Institute: Physical and Theoretical Chemistry
 * Department: Single Molecule Biophysics
