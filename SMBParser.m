@@ -130,8 +130,8 @@
 	[message appendString:@"SSP Help Message:"];
 	[message appendString:@"\nSSP needs at least 4 parameters"];
 	[message appendString:@"\n#1\t(int)\t number of molecules to simulate"];
-	[message appendString:@"\n#2\t(float)\t p value"];
-	[message appendString:@"\n#3\t(float)\t q value"];
+	[message appendString:@"\n#2\t(float)\t p value (bleaching probability)"];
+	[message appendString:@"\n#3\t(float)\t d value (detection probability)"];
 	[message appendString:@"\n#4-end\t(float)\t pdf of available molecule types"];
 	[message appendString:@"\nparameters 4-end need to sum to 1.\n\n"];
 	NSLog(@"%@",message);

@@ -31,13 +31,13 @@
 
 @implementation SMBMolecule
 //initializer
--(id) init:(unsigned) molData :(double*) pData :(double*) qData
+-(id) init:(unsigned) molData :(double*) pData :(double*) dData
 {
     self = [super init];
     if (self) {
         _numberOfBindingSites = molData;
 	_p = pData;
-	_q = qData;
+	_d = dData;
         _bindingEventList = [[NSMutableArray alloc] init];
         _blinkingEventList = [[NSMutableArray alloc] init];
 	_blinkingEvents = 0;
@@ -66,14 +66,14 @@
 	return _p;
 }
 
--(void) setQ:(double*) data
+-(void) setD:(double*) data
 {
-	_q = data;
+	_d = data;
 }
 
--(double*) q
+-(double*) d
 {
-	return _q;
+	return _d;
 }
 
 -(NSMutableArray*) bindingEventList
@@ -124,11 +124,11 @@
     [_bindingEventList removeAllObjects];
     for (unsigned i=0; i<_numberOfBindingSites; i++){
         event = (rand() % 1000)/(double)1000;
-        if (event <= *_q){
-    	    [_bindingEventList addObject: [NSNumber numberWithInt:0]];
+        if (event <= *_d){
+    	    [_bindingEventList addObject: [NSNumber numberWithInt:1]];
         }
 	else{
-    	    [_bindingEventList addObject: [NSNumber numberWithInt:1]];
+    	    [_bindingEventList addObject: [NSNumber numberWithInt:0]];
 	}
     }
 }

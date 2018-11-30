@@ -1,8 +1,8 @@
 /* ######################################################################
-* File Name: main.m
-* Project: SSP
-* Version: 18.10
-* Creation Date: 10.10.2018
+* File Name:
+* Project: 
+* Version:
+* Creation Date:
 * Created By: Sebastian Malkusch
 * Contact: <malkusch@chemie.uni-frankfurt.de>
 * Company: Goethe University of Frankfurt
@@ -25,39 +25,43 @@
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #######################################################################*/
 
+#ifndef SMBFileNames_h
+#define SMBFileNames_h
+
 #import <Foundation/Foundation.h>
-#import "SMBParser.h"
-#import "SMBFlock.h"
-#import "SMBActions.h"
-#import "SMBMolecule.h"
 
-
-int main(int argc, const char * argv[]) {
-    // set up manual reference counting (MRC) environment
-    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-	//manage parser arguments
-	SMBParser *parser = [[[SMBParser alloc] init] autorelease];
-	[parser importCommandLineArguments:argc :argv];
- 	if(([parser help]) || (![parser checkParserLength: 4])){
-		[pool drain];
-		return 0;
-	}
-	// Initialize Flock
-	
-	SMBFlock *flock = [[[SMBFlock alloc] init] autorelease];
-	[flock importParser: [parser argv]];
-	if(![flock checkFlockValidity]){
-		[pool drain];
-		return 0;
-	}
-	// run simulation
-	[flock printFlockParameter];
-	[flock initActions];
-	[flock initMolecules];
-	[flock runSimulation];
-	[flock determineBlinkingStatistics];
-	// write simulation results
-	[flock logSimulation];
-    [pool drain];
-    return 0;
+@interface SMBFileNames : NSObject
+{
+	NSDate* _creationTime;
+	NSMutableString* _simParameterFileName;
+	NSMutableString* _simResultFileName;
+	NSMutableString* _simStatisticsFileName;
+	NSMutableString* _simHistFileName;
 }
+
+//initializer
+-(id) init;
+
+//mutators
+-(NSMutableString*) simParameterFileName;
+-(NSMutableString*) simResultFileName;
+-(NSMutableString*) simStatisticsFileName;
+-(NSMutableString*) simHistFileName;
+
+//creation Fuctions
+-(void) createFileNames;
+-(void) createSimParameterFileName;
+-(void) createSimResultFileName;
+-(void) createSimStatisticsFileName;
+-(void) createSimHistFileName;
+
+//print Functions
+-(void) printFileNames;
+-(void) printSimParameterFileName;
+-(void) printSimResultFileName;
+-(void) printSimStatisticsFileName;
+-(void) printSimHistFileName;
+//deallocator
+-(void) deallocate;
+@end;
+#endif

@@ -35,22 +35,22 @@
 {
 	unsigned _numberOfBindingSites;
 	double* _p;
-	double* _q;
+	double* _d;
 	NSMutableArray* _bindingEventList;
 	NSMutableArray* _blinkingEventList;
 	unsigned _blinkingEvents;
 }
 
 //initializer
--(id) init: (unsigned) molData :(double*) pData :(double*) qData;
+-(id) init: (unsigned) molData :(double*) pData :(double*) dData;
 
 //mutators
 -(void) setNumberOfBindingSites:(unsigned) data;
 -(unsigned) numberOfBindingSites;
 -(void) setP:(double*) data;
 -(double*) p;
--(void) setQ:(double*) data;
--(double*) q;
+-(void) setD:(double*) data;
+-(double*) d;
 -(NSMutableArray*) bindingEventList;
 -(unsigned) bindingEventAtSite:(unsigned) data;
 -(NSMutableArray*) blinkingEventList;
@@ -59,18 +59,18 @@
 -(unsigned) blinkingEvents;
 
 // simulation methods
-- (void) simMolecule;
-- (void) simPositiveBindingEvents;
-- (void) simMoleculeBlinking;
-- (unsigned) simBindingSiteBlinking: (unsigned) site;
-- (bool) checkBlinkingEvent;
-- (void) sumBlinkingEvents;
+-(void) simMolecule;
+-(void) simPositiveBindingEvents;
+-(void) simMoleculeBlinking;
+-(unsigned) simBindingSiteBlinking: (unsigned) site;
+-(bool) checkBlinkingEvent;
+-(void) sumBlinkingEvents;
 
 //print functions
-- (void) printBindingEventList;
-- (void) printBlinkingEventList;
-- (void) printBlinkingEvents;
-- (void) printMolecule;
+-(void) printBindingEventList;
+-(void) printBlinkingEventList;
+-(void) printBlinkingEvents;
+-(void) printMolecule;
 
 //deallocator
 -(void) dealloc;

@@ -30,20 +30,20 @@
 
 #import <Foundation/Foundation.h>
 #import"SMBActions.h"
+#import"SMBHistogram.h"
+#import"SMBFileNames.h"
 
 @interface SMBFlock : NSObject
 {
 	unsigned _numberOfMolecules;
 	double _p;
-	double _q;
+	double _d;
 	NSMutableArray* _moleculePDF;
 	NSMutableArray* _moleculeCDF;
 	NSMutableArray* _molecules;
 	SMBActions* _actions;
-	NSDate* _creationTime;
-	NSMutableString* _parameterFileName;
-	NSMutableString* _resultFileName;
-	NSMutableString* _statisticsFileName;
+	SMBHistogram* _histogram;
+	SMBFileNames* _fileNames;
 }
 
 //initializers
@@ -52,7 +52,7 @@
 //mutators
 -(void) setNumberOfMolecules:(unsigned) data;
 -(void) setP:(double) data;
--(void) setQ:(double) data;
+-(void) setD:(double) data;
 -(void) setMoleculePDF:(NSMutableArray*) data;
 
 //import functions
@@ -67,6 +67,7 @@
 -(void) initActions;
 -(void) initMolecules;
 -(void) runSimulation;
+-(void) determineBlinkingStatistics;
 
 //proof functions
 -(bool) checkPDF;
@@ -74,14 +75,11 @@
 -(bool) checkFlockValidity;
 
 //write functions
--(void) createFileNames;
--(void) createParameterFileName;
--(void) createResultsFileName;
--(void) createStatisticsFileName;
 -(void) logSimulation;
--(void) writeSimulationParameters;
--(void) writeSimulationResults;
--(void) writeSimulationStatistics;
+-(void) writeSimulationParameterToFile:(NSMutableString*) data;
+-(void) writeSimulationResultToFile:(NSMutableString*) data;
+-(void) writeSimulationStatisticsToFile:(NSMutableString*) data;
+-(void) writeSimulationHistogramToFile:(NSMutableString*) data;
 
 //print functions
 -(void) printFlockParameter;

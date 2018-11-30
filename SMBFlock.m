@@ -15,12 +15,12 @@
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
-
+*
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
-
+*
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ###################################################################### */
@@ -38,18 +38,15 @@
 	if (self){
 		_numberOfMolecules = 0;
 		_p = 0.0;
-		_q = 0.0;
+		_d = 0.0;
 		_moleculePDF = [[NSMutableArray alloc] init];
 		_moleculeCDF = [[NSMutableArray alloc] init];
 		_molecules = [[NSMutableArray alloc] init];
 		_actions = [[SMBActions alloc] init];
-		// SMBActions!!
-		_creationTime = [[NSDate alloc] init];
-		_parameterFileName = [[NSMutableString alloc] init];
-		_resultFileName = [[NSMutableString alloc] init];
-		_statisticsFileName = [[NSMutableString alloc] init];
+		_histogram = [[SMBHistogram alloc] init];
+		_fileNames = [[SMBFileNames alloc] init];
 		//create Filenames!!!
-		[self createFileNames];
+		[_fileNames createFileNames];
 	}
 	return self;
 }
@@ -65,9 +62,9 @@
 	_p = data;
 }
 
--(void) setQ:(double) data
+-(void) setD:(double) data
 {
-	_q = data;
+	_d = data;
 }
 
 -(void) setMoleculePDF:(NSMutableArray*) data
@@ -82,7 +79,7 @@
 	//check data for length
 	_numberOfMolecules = [[data objectAtIndex: 0] unsignedIntValue];
 	_p = [[data objectAtIndex: 1] doubleValue];
-	_q = [[data objectAtIndex: 2] doubleValue];
+	_d = [[data objectAtIndex: 2] doubleValue];
 	[_moleculePDF removeAllObjects];
 	for (unsigned i=3; i< [data count]; i++){
 		[_moleculePDF addObject: [[data objectAtIndex:i] copy]];
@@ -137,7 +134,7 @@
 {
 	[_molecules removeAllObjects];
 	for(unsigned i=0; i<_numberOfMolecules; i++){
-		[_molecules addObject: [[SMBMolecule alloc]init:[self simMoleculeType] :&_p :&_q]];
+		[_molecules addObject: [[SMBMolecule alloc]init:[self simMoleculeType] :&_p :&_d]];
 		[[_molecules objectAtIndex:i] release];
 	}
 }
@@ -147,6 +144,18 @@
 	for(unsigned i=0; i<_numberOfMolecules; i++){
 		[[_molecules objectAtIndex:i] simMolecule];
 	}
+}
+
+-(void) determineBlinkingStatistics
+{
+	double blinks;
+	NSMutableArray* blinkArray = [[NSMutableArray alloc] init];
+	for (unsigned i=0; i<[_molecules count]; i++){
+		blinks = [[_molecules objectAtIndex: i] blinkingEvents]; 
+		[blinkArray addObject:[NSNumber numberWithDouble: blinks]];
+	}
+	[_histogram calculateHistogram: blinkArray];
+	[blinkArray release]; 
 }
 
 // proof functions
@@ -179,67 +188,27 @@
 	bool result =true;
 	bool c1=[self checkPDF];
 	bool c2=[self checkProbability: _p];
-	bool c3=[self checkProbability: _q];
+	bool c3=[self checkProbability: _d];
 	if(((!c1)||(!c2))||(!c3)) result = false;
 	return result;
 }
 
 //write functions
--(void) createFileNames
-{
-	[self createParameterFileName];
-	[self createResultsFileName];
-	[self createStatisticsFileName];
-}
--(void) createParameterFileName
-{
-	[_parameterFileName deleteCharactersInRange: NSMakeRange(0, [_parameterFileName length])];
-	[_parameterFileName appendString: @"ssp_at_"];
-	[_parameterFileName appendString: [_creationTime description]];
-	[_parameterFileName appendString: @"_parameter.txt"];
-	[_parameterFileName replaceCharactersInRange: NSMakeRange(17,1) withString: @"_"];
-	[_parameterFileName replaceCharactersInRange: NSMakeRange(20,1) withString: @"-"];
-	[_parameterFileName replaceCharactersInRange: NSMakeRange(23,1) withString: @"-"];
-	[_parameterFileName replaceCharactersInRange: NSMakeRange(26,7) withString: @"_"];
-}
-
--(void) createResultsFileName
-{
-	[_resultFileName deleteCharactersInRange: NSMakeRange(0, [_resultFileName length])];
-	[_resultFileName appendString: @"ssp_at_"];
-	[_resultFileName appendString: [_creationTime description]];
-	[_resultFileName appendString: @"_results.txt"];
-	[_resultFileName replaceCharactersInRange: NSMakeRange(17,1) withString: @"_"];
-	[_resultFileName replaceCharactersInRange: NSMakeRange(20,1) withString: @"-"];
-	[_resultFileName replaceCharactersInRange: NSMakeRange(23,1) withString: @"-"];
-	[_resultFileName replaceCharactersInRange: NSMakeRange(26,7) withString: @"_"];
-}
-
--(void) createStatisticsFileName
-{
-	[_statisticsFileName deleteCharactersInRange: NSMakeRange(0, [_statisticsFileName length])];
-	[_statisticsFileName appendString: @"ssp_at_"];
-	[_statisticsFileName appendString: [_creationTime description]];
-	[_statisticsFileName appendString: @"_statistics.txt"];
-	[_statisticsFileName replaceCharactersInRange: NSMakeRange(17,1) withString: @"_"];
-	[_statisticsFileName replaceCharactersInRange: NSMakeRange(20,1) withString: @"-"];
-	[_statisticsFileName replaceCharactersInRange: NSMakeRange(23,1) withString: @"-"];
-	[_statisticsFileName replaceCharactersInRange: NSMakeRange(26,7) withString: @"_"];
-}
-
 -(void) logSimulation
 {
-	[self writeSimulationParameters];
-	[self writeSimulationResults];
-	[self writeSimulationStatistics];
+	[self writeSimulationParameterToFile: [_fileNames simParameterFileName]];
+	[self writeSimulationResultToFile: [_fileNames simResultFileName]];
+	[self writeSimulationStatisticsToFile: [_fileNames simStatisticsFileName]];
+	[self writeSimulationHistogramToFile: [_fileNames simHistFileName]];
 }
--(void) writeSimulationParameters
+-(void) writeSimulationParameterToFile: (NSMutableString*) data
 {
+	[data retain];
 	FILE* stream;
-	if ((stream = fopen([_parameterFileName UTF8String], "w")) != NULL){
+	if ((stream = fopen([data UTF8String], "w")) != NULL){
 		fprintf(stream, "#SSP parameter file\n");
 		fprintf(stream, "#p:\n%.3f\n", _p);
-		fprintf(stream, "#q:\n%.3f\n", _q);
+		fprintf(stream, "#d:\n%.3f\n", _d);
 		fprintf(stream, "#n:\n%i\n", _numberOfMolecules);
 		fprintf(stream, "# probability density function of molecule types:\n");
 		for (unsigned i=0; i<[_moleculePDF count]; i++){
@@ -253,15 +222,17 @@
 	fclose(stream);
 	}
 	else{
-		NSLog(@"Error: Could not write simulation parameters to file %@. Make sure you have the rights to access it.", _parameterFileName);
+		NSLog(@"Error: Could not write simulation parameters to file %@. Make sure you have the rights to access it.", data);
 	}
+	[data release];
 }
 
--(void) writeSimulationResults
+-(void) writeSimulationResultToFile: (NSMutableString*) data
 {
+	[data retain];
 	unsigned a, b;
 	FILE* stream;
-	if ((stream = fopen([_resultFileName UTF8String], "w")) != NULL){
+	if ((stream = fopen([data UTF8String], "w")) != NULL){
 		fprintf(stream, "#SSP result file\n");
 		fprintf(stream, "#molecule\tactivity\tblinks\n");
 		for (unsigned i=0; i<_numberOfMolecules; i++){
@@ -275,15 +246,17 @@
 	fclose(stream);
 	}
 	else{
-		NSLog(@"Error: Could not write simulation results to file %@. Make sure you have the rights to access it.", _resultFileName);
+		NSLog(@"Error: Could not write simulation results to file %@. Make sure you have the rights to access it.", data);
 	}
+	[data release];
 }
 
--(void) writeSimulationStatistics
+-(void) writeSimulationStatisticsToFile: (NSMutableString*) data
 {
+	[data retain];
 	unsigned s, a, b;
 	FILE* stream;
-	if ((stream = fopen([_statisticsFileName UTF8String], "w")) != NULL){
+	if ((stream = fopen([data UTF8String], "w")) != NULL){
 		fprintf(stream, "#SSP statistics file\n");
 		fprintf(stream, "#molecule\tsites\tactivity\tblinks\n");
 		for (unsigned i=0; i<_numberOfMolecules; i++){
@@ -295,8 +268,17 @@
 		fclose(stream);
 	}
 	else{
-		NSLog(@"Error: Could not write simulation statistics to file %@. Make sure you have the rights to access it.", _statisticsFileName);
+		NSLog(@"Error: Could not write simulation statistics to file %@. Make sure you have the rights to access it.", data);
 	}
+	[data release];
+}
+
+-(void) writeSimulationHistogramToFile: (NSMutableString*) data
+{
+	[data retain];
+	[_histogram setHistFileName: data];
+	[_histogram writeHistogram];
+	[data release];
 }
 
 //print functions
@@ -306,7 +288,7 @@
 	[message appendString: @"SSP simulation parameters:"];
 	[message appendFormat: @"\nmolecules:\t%i", _numberOfMolecules];
 	[message appendFormat: @"\np:\t%.2f", _p];
-	[message appendFormat: @"\nq:\t%.2f", _q];
+	[message appendFormat: @"\nd:\t%.2f", _d];
 	[message appendString: @"\nstate\tPDF\tCDF\n"];
 	for (unsigned i=0; i<[_moleculePDF count]; i++){
 		[message appendFormat: @"# %i", i+1];
@@ -345,14 +327,11 @@
 	[_molecules release];
 	_molecules = nil;
 	[_actions release];
-	[_creationTime release];
-	_creationTime = nil;
-	[_parameterFileName release];
-	_parameterFileName = nil;
-	[_resultFileName release];
-	_resultFileName = nil;
-	[_statisticsFileName release];
-	_statisticsFileName = nil;
+	_actions = nil;
+	[_histogram release];
+	_histogram = nil;
+	[_fileNames release];
+	_fileNames = nil;
 	[super dealloc];
 }
 
