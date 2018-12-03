@@ -148,14 +148,14 @@
 
 -(void) determineBlinkingStatistics
 {
-	double blinks;
-	NSMutableArray* blinkArray = [[NSMutableArray alloc] init];
+	double events;
+	NSMutableArray* eventsArray = [[NSMutableArray alloc] init];
 	for (unsigned i=0; i<[_molecules count]; i++){
-		blinks = [[_molecules objectAtIndex: i] blinkingEvents]; 
-		[blinkArray addObject:[NSNumber numberWithDouble: blinks]];
+		events = [[_molecules objectAtIndex: i] fluorescenceEvents]; 
+		[eventsArray addObject:[NSNumber numberWithDouble: events]];
 	}
-	[_histogram calculateHistogram: blinkArray];
-	[blinkArray release]; 
+	[_histogram calculateHistogram: eventsArray];
+	[eventsArray release]; 
 }
 
 // proof functions
@@ -234,11 +234,11 @@
 	FILE* stream;
 	if ((stream = fopen([data UTF8String], "w")) != NULL){
 		fprintf(stream, "#SSP result file\n");
-		fprintf(stream, "#molecule\tactivity\tblinks\n");
+		fprintf(stream, "#molecule\tactivity\tflourescence events\n");
 		for (unsigned i=0; i<_numberOfMolecules; i++){
 			for (unsigned j=0; j<[[_molecules objectAtIndex:i] numberOfBindingSites]; j++){
 				a = [[_molecules objectAtIndex: i] bindingEventAtSite: j];
-				b = [[_molecules objectAtIndex: i] blinkingEventsAtSite: j];
+				b = [[_molecules objectAtIndex: i] fluorescenceEventsAtSite: j];
 				fprintf(stream, "%u\t%u\t%u\n", i,a,b);
 			}
 		}
@@ -258,11 +258,11 @@
 	FILE* stream;
 	if ((stream = fopen([data UTF8String], "w")) != NULL){
 		fprintf(stream, "#SSP statistics file\n");
-		fprintf(stream, "#molecule\tsites\tactivity\tblinks\n");
+		fprintf(stream, "#molecule\tsites\tactivity\tfluorescence events\n");
 		for (unsigned i=0; i<_numberOfMolecules; i++){
 			s = [[_molecules objectAtIndex: i] numberOfBindingSites];
 			a = [[_molecules objectAtIndex: i] numberOfActiveBindingSites];
-			b = [[_molecules objectAtIndex: i] blinkingEvents]; 
+			b = [[_molecules objectAtIndex: i] fluorescenceEvents]; 
 			fprintf(stream, "%u\t%u\t%u\t%u\n", i,s,a,b);
 		}
 		fclose(stream);

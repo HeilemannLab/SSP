@@ -34,8 +34,8 @@
 {
 	unsigned _lowerBound;
 	unsigned _upperBound;
-	unsigned _eventNumber;
-	NSMutableArray* _eventCoordinate;
+	unsigned _blinkingEventNumber;
+	NSMutableArray* _blinkingEventCoordinate;
 	NSMutableArray* _rawOccurrence;
 	NSMutableArray* _normOccurrence;
 	NSMutableString* _histFileName;
@@ -53,8 +53,8 @@
 -(unsigned) binarySearchEvent:(unsigned) data;
 
 //proof functions
--(bool) checkEventNumber;
--(bool) checkEventCoordinate;
+-(bool) checkBlinkingEventNumber;
+-(bool) checkBlinkingEventCoordinate;
 -(bool) checkRawOccurrence;
 -(bool) checkNormOccurrence;
 -(bool) checkArrayCompatibility;
@@ -62,7 +62,7 @@
 
 //Histogram caclulation functions
 -(void) determineUpperBound:(NSMutableArray*) data;
--(void) calculateEventCoordinate;
+-(void) calculateBlinkingEventCoordinate;
 -(void) calculateRawOccurrence:(NSMutableArray*) data;
 -(void) normalizeOccurrence;
 -(void) calculateHistogram:(NSMutableArray*) data;
@@ -72,8 +72,8 @@
 
 //print functions
 -(void) printHistogram;
--(void) printEventNumberError;
--(void) printEventCoordinateError;
+-(void) printBlinkingEventNumberError;
+-(void) printBlinkingEventCoordinateError;
 -(void) printRawOccurrenceError;
 -(void) printNormOccurrenceError;
 -(void) printNormalizationError;

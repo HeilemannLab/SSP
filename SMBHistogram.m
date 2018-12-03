@@ -15,12 +15,12 @@
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
-
+*
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
-
+*
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #####################################################################*/
@@ -36,8 +36,8 @@
 	if (self){
 		_lowerBound = 0;
 		_upperBound = 0;
-		_eventNumber = 0;
-		_eventCoordinate = [[NSMutableArray alloc] init];
+		_blinkingEventNumber = 0;
+		_blinkingEventCoordinate = [[NSMutableArray alloc] init];
 		_rawOccurrence = [[NSMutableArray alloc] init];
 		_normOccurrence = [[NSMutableArray alloc] init];
 		_histFileName = [[NSMutableString alloc] init];
@@ -75,11 +75,11 @@
 -(unsigned) binarySearchEvent:(unsigned) data
 {
 	unsigned l = 0;
-	unsigned r = (unsigned int)[_eventCoordinate count]-1;
+	unsigned r = (unsigned int)[_blinkingEventCoordinate count]-1;
 	unsigned m = 0;
 	while (l<r){
 		m = floor((l+r)/2); 
-		if ([[_eventCoordinate objectAtIndex: m] unsignedIntValue] < data){
+		if ([[_blinkingEventCoordinate objectAtIndex: m] unsignedIntValue] < data){
 			l = m + 1;
 		}
 		else{
@@ -90,23 +90,23 @@
 }
 
 //proof functions
--(bool) checkEventNumber
+-(bool) checkBlinkingEventNumber
 {
 	bool result = true;
-	if (_eventNumber < 1){
+	if (_blinkingEventNumber < 1){
 		result = false;
-		[self printEventNumberError];
+		[self printBlinkingEventNumberError];
 	}
 	return result;
 }
 
--(bool) checkEventCoordinate
+-(bool) checkBlinkingEventCoordinate
 {
 	bool result = true;
-	unsigned entries = [_eventCoordinate count];
+	unsigned entries = [_blinkingEventCoordinate count];
 	if (entries < 1){
 		result = false;
-		[self printEventCoordinateError];
+		[self printBlinkingEventCoordinateError];
 	}
 	return result;
 }
@@ -143,11 +143,11 @@
 -(bool) checkArrayCompatibility
 {
 	bool result = true;
-	if ([_eventCoordinate count] != [_rawOccurrence count]){
+	if ([_blinkingEventCoordinate count] != [_rawOccurrence count]){
 		result = false;
 		[self printRawSizeError];
 	}
-	if ([_eventCoordinate count] != [_normOccurrence count]){
+	if ([_blinkingEventCoordinate count] != [_normOccurrence count]){
 		result = false;
 		[self printNormSizeError];
 	}
@@ -157,8 +157,8 @@
 -(bool) checkHistogramValidity
 {
 	bool result = true;
-	bool c1=[self checkEventNumber];
-	bool c2=[self checkEventCoordinate];
+	bool c1=[self checkBlinkingEventNumber];
+	bool c2=[self checkBlinkingEventCoordinate];
 	bool c3=[self checkRawOccurrence];
 	bool c4=[self checkNormOccurrence];
 	bool c5=[self checkArrayCompatibility];
@@ -179,11 +179,11 @@
 	[data release];
 }
 
--(void) calculateEventCoordinate
+-(void) calculateBlinkingEventCoordinate
 {
-	[_eventCoordinate removeAllObjects];
+	[_blinkingEventCoordinate removeAllObjects];
 	for(unsigned i=0; i<_upperBound; i++){
-		[_eventCoordinate addObject:[NSNumber numberWithUnsignedInt: i]];
+		[_blinkingEventCoordinate addObject:[NSNumber numberWithUnsignedInt: i]];
 	}
 }
 
@@ -191,7 +191,7 @@
 {
 	[data retain];
 	[_rawOccurrence removeAllObjects];
-	for(unsigned i=0; i<[_eventCoordinate count]; i++){
+	for(unsigned i=0; i<[_blinkingEventCoordinate count]; i++){
 		[_rawOccurrence addObject:[NSNumber numberWithUnsignedInt: 0]];
 	}
 	unsigned tempEvent;
@@ -214,9 +214,9 @@
 {
 	double tempProb;
 	[_normOccurrence removeAllObjects];
-	_eventNumber = [self sumUnsignedArray: _rawOccurrence];
+	_blinkingEventNumber = [self sumUnsignedArray: _rawOccurrence];
 	for(unsigned i=0; i<[_rawOccurrence count]; i++){
-		tempProb = [[_rawOccurrence objectAtIndex:i] doubleValue]/(double)_eventNumber;
+		tempProb = [[_rawOccurrence objectAtIndex:i] doubleValue]/(double)_blinkingEventNumber;
 		[_normOccurrence addObject:[NSNumber numberWithDouble: tempProb]];
 	}
 
@@ -226,7 +226,7 @@
 {
 	[data retain];
 	[self determineUpperBound: data];
-	[self calculateEventCoordinate];
+	[self calculateBlinkingEventCoordinate];
 	[self calculateRawOccurrence: data];
 	[self normalizeOccurrence];
 	[self checkHistogramValidity];
@@ -240,9 +240,9 @@
 	if ((stream = fopen([_histFileName UTF8String], "w")) != NULL){
 		fprintf(stream, "#SSP blinking occurrence histogram file\n");
 		fprintf(stream, "#blinks\traw\tnormalized\n");
-		for (unsigned i=0; i<[_eventCoordinate count]; i++){
+		for (unsigned i=0; i<[_blinkingEventCoordinate count]; i++){
 			fprintf(stream, "%i\t%i\t%.5f\n",
-			[[_eventCoordinate objectAtIndex: i] unsignedIntValue],
+			[[_blinkingEventCoordinate objectAtIndex: i] unsignedIntValue],
 			[[_rawOccurrence objectAtIndex: i] unsignedIntValue],
 			[[_normOccurrence objectAtIndex: i] doubleValue]);
 		}
@@ -257,20 +257,20 @@
 -(void) printHistogram
 {
 	NSLog(@"ssp histogram:");
-	for (unsigned i=0; i < [_eventCoordinate count]; i++){
+	for (unsigned i=0; i < [_blinkingEventCoordinate count]; i++){
 		printf("%i\t%i\t%.3f\n",
-		[[_eventCoordinate objectAtIndex: i] unsignedIntValue],
+		[[_blinkingEventCoordinate objectAtIndex: i] unsignedIntValue],
 		[[_rawOccurrence objectAtIndex: i] unsignedIntValue],
 		[[_normOccurrence objectAtIndex: i] doubleValue]);
 	}
 }
 
--(void) printEventNumberError
+-(void) printBlinkingEventNumberError
 {
 	NSLog(@"Event Number Error: The event number needs to be of type unsigned integer!");
 }
 
--(void) printEventCoordinateError
+-(void) printBlinkingEventCoordinateError
 {
 	NSLog(@"Event Coordinate Error: The eventCoordinate array needs to be of positive size.");
 }
@@ -303,8 +303,8 @@
 //deallocator
 -(void)dealloc
 {
-	[_eventCoordinate release];
-	_eventCoordinate = nil;
+	[_blinkingEventCoordinate release];
+	_blinkingEventCoordinate = nil;
 	[_rawOccurrence release];
 	_rawOccurrence = nil;
 	[_normOccurrence release];

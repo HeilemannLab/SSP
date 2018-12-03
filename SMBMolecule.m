@@ -15,12 +15,12 @@
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
-
+*
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
-
+*
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #####################################################################*/
@@ -39,8 +39,8 @@
 	_p = pData;
 	_d = dData;
         _bindingEventList = [[NSMutableArray alloc] init];
-        _blinkingEventList = [[NSMutableArray alloc] init];
-	_blinkingEvents = 0;
+        _fluorescenceEventList = [[NSMutableArray alloc] init];
+	_fluorescenceEvents = 0;
     }
     return self;
 }
@@ -86,14 +86,14 @@
 	return (unsigned int)[[_bindingEventList objectAtIndex: data] unsignedLongValue];
 }
 
--(NSMutableArray*) blinkingEventList
+-(NSMutableArray*) fluorescenceEventList
 {
-	return _blinkingEventList;
+	return _fluorescenceEventList;
 }
 
--(unsigned) blinkingEventsAtSite:(unsigned) data
+-(unsigned) fluorescenceEventsAtSite:(unsigned) data
 {
-	return (unsigned int)[[_blinkingEventList objectAtIndex: data] unsignedLongValue];
+	return (unsigned int)[[_fluorescenceEventList objectAtIndex: data] unsignedLongValue];
 }
 
 -(unsigned) numberOfActiveBindingSites
@@ -105,9 +105,9 @@
 	return activeSites;
 }
 
--(unsigned) blinkingEvents
+-(unsigned) fluorescenceEvents
 {
-	return _blinkingEvents;
+	return _fluorescenceEvents;
 }
 
 //simulation Methods
@@ -115,7 +115,7 @@
 {
 	[self simPositiveBindingEvents];
 	[self simMoleculeBlinking];
-	[self sumBlinkingEvents];
+	[self sumFluorescenceEvents];
 }
 
 -(void) simPositiveBindingEvents
@@ -135,29 +135,29 @@
 
 - (void) simMoleculeBlinking
 {
-    unsigned blinks = 0;
-    [_blinkingEventList removeAllObjects];
+    unsigned events = 0;
+    [_fluorescenceEventList removeAllObjects];
     for (unsigned i=0; i<_numberOfBindingSites; i++){
-        blinks = [self simBindingSiteBlinking: i];
-        [_blinkingEventList addObject: [NSNumber numberWithInt: blinks]];
+        events = [self simBindingSiteBlinking: i];
+        [_fluorescenceEventList addObject: [NSNumber numberWithInt: events]];
     }
 }
 
 - (unsigned) simBindingSiteBlinking: (unsigned) site
 {
-    unsigned blinks = 0;
+    unsigned events = 0;
     if ([[_bindingEventList objectAtIndex:site] intValue]){
-        blinks = 1;
-        bool result = [self checkBlinkingEvent];
+        events = 1;
+        bool result = [self checkFluorescenceEvent];
         while (result){
-            ++blinks;
-            result = [self checkBlinkingEvent];
+            ++events;
+            result = [self checkFluorescenceEvent];
         }
     }
-    return blinks;
+    return events;
 }
 
-- (bool) checkBlinkingEvent
+- (bool) checkFluorescenceEvent
 {
     bool result=true;
     double event = (rand() % 1000)/(double)1000;
@@ -165,11 +165,11 @@
     return result;
 }
 
-- (void) sumBlinkingEvents
+- (void) sumFluorescenceEvents
 {
-    _blinkingEvents = 0;
+    _fluorescenceEvents = 0;
     for (unsigned i=0; i<_numberOfBindingSites; i++){
-        _blinkingEvents += [[_blinkingEventList objectAtIndex: i] intValue];
+        _fluorescenceEvents += [[_fluorescenceEventList objectAtIndex: i] intValue];
     }
 }
 
@@ -179,21 +179,21 @@
     NSLog(@"\nThe occupancy of the molecule's binding sites is\n %@", _bindingEventList);
 }
 
-- (void) printBlinkingEventList
+- (void) printFluorescenceEventList
 {
-    NSLog(@"\nThe blinking events of the molecule are\n %@", _blinkingEventList);
+    NSLog(@"\nThe fluorescence events of the molecule are\n %@", _fluorescenceEventList);
 }
 
-- (void) printBlinkingEvents
+- (void) printFluorescenceEvents
 {
-    NSLog(@"The detected blinking events of the molecule are %u", _blinkingEvents);
+    NSLog(@"The detected fluorescence events of the molecule are %u", _fluorescenceEvents);
 }
 
 - (void) printMolecule
 {
     [self printBindingEventList];
-    [self printBlinkingEventList];
-    [self printBlinkingEvents];
+    [self printFluorescenceEventList];
+    [self printFluorescenceEvents];
 }
 
 //deallocator
@@ -201,8 +201,8 @@
 {
 	[_bindingEventList release];
 	_bindingEventList = nil;
-	[_blinkingEventList release];
-	_blinkingEventList = nil;
+	[_fluorescenceEventList release];
+	_fluorescenceEventList = nil;
 	[super dealloc];
 }
 

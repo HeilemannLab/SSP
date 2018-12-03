@@ -37,8 +37,8 @@
 	double* _p;
 	double* _d;
 	NSMutableArray* _bindingEventList;
-	NSMutableArray* _blinkingEventList;
-	unsigned _blinkingEvents;
+	NSMutableArray* _fluorescenceEventList;
+	unsigned _fluorescenceEvents;
 }
 
 //initializer
@@ -53,23 +53,23 @@
 -(double*) d;
 -(NSMutableArray*) bindingEventList;
 -(unsigned) bindingEventAtSite:(unsigned) data;
--(NSMutableArray*) blinkingEventList;
--(unsigned) blinkingEventsAtSite:(unsigned) data;
+-(NSMutableArray*) fluorescenceEventList;
+-(unsigned) fluorescenceEventsAtSite:(unsigned) data;
 -(unsigned) numberOfActiveBindingSites;
--(unsigned) blinkingEvents;
+-(unsigned) fluorescenceEvents;
 
 // simulation methods
 -(void) simMolecule;
 -(void) simPositiveBindingEvents;
 -(void) simMoleculeBlinking;
 -(unsigned) simBindingSiteBlinking: (unsigned) site;
--(bool) checkBlinkingEvent;
--(void) sumBlinkingEvents;
+-(bool) checkFluorescenceEvent;
+-(void) sumFluorescenceEvents;
 
 //print functions
 -(void) printBindingEventList;
--(void) printBlinkingEventList;
--(void) printBlinkingEvents;
+-(void) printFluorescenceEventList;
+-(void) printFluorescenceEvents;
 -(void) printMolecule;
 
 //deallocator
