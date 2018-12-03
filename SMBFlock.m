@@ -214,7 +214,7 @@
 		for (unsigned i=0; i<[_moleculePDF count]; i++){
 			fprintf(stream, "%.3f\t", [[_moleculePDF objectAtIndex:i] doubleValue]);
 		}
-		fprintf(stream, "\n# cummulative density function of molecule types:\n");
+		fprintf(stream, "\n# cumulative density function of molecule types:\n");
 		for (unsigned i=0; i<[_moleculeCDF count]; i++){
 			fprintf(stream, "%.3f\t", [[_moleculeCDF objectAtIndex:i] doubleValue]);
 		}
@@ -234,7 +234,7 @@
 	FILE* stream;
 	if ((stream = fopen([data UTF8String], "w")) != NULL){
 		fprintf(stream, "#SSP result file\n");
-		fprintf(stream, "#molecule\tactivity\tflourescence events\n");
+		fprintf(stream, "#molecule\tactivity\tfluorescence events\n");
 		for (unsigned i=0; i<_numberOfMolecules; i++){
 			for (unsigned j=0; j<[[_molecules objectAtIndex:i] numberOfBindingSites]; j++){
 				a = [[_molecules objectAtIndex: i] bindingEventAtSite: j];
